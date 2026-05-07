@@ -21,22 +21,22 @@ public sealed class TrayIconService : IDisposable
         _viewModel = viewModel;
         _window = window;
 
-        var open = new Forms.ToolStripMenuItem("Open Light Pilot");
+        var open = new Forms.ToolStripMenuItem("Open");
         open.Click += (_, _) => ShowWindow();
 
         _autoItem = new Forms.ToolStripMenuItem();
         _autoItem.Click += (_, _) => _viewModel.ToggleAutoCommand.Execute(null);
 
-        var pauseThirty = new Forms.ToolStripMenuItem("Pause 30 min");
+        var pauseThirty = new Forms.ToolStripMenuItem("Pause 30 minutes");
         pauseThirty.Click += (_, _) => _viewModel.PauseThirtyMinutesCommand.Execute(null);
 
         var pauseHour = new Forms.ToolStripMenuItem("Pause 1 hour");
         pauseHour.Click += (_, _) => _viewModel.PauseOneHourCommand.Execute(null);
 
-        var pauseTomorrow = new Forms.ToolStripMenuItem("Pause until tomorrow");
+        var pauseTomorrow = new Forms.ToolStripMenuItem("Pause tonight");
         pauseTomorrow.Click += (_, _) => _viewModel.PauseUntilTomorrowCommand.Execute(null);
 
-        var resume = new Forms.ToolStripMenuItem("Resume now");
+        var resume = new Forms.ToolStripMenuItem("Resume");
         resume.Click += (_, _) => _viewModel.ResumeCommand.Execute(null);
 
         _modeItem = new Forms.ToolStripMenuItem { Enabled = false };
@@ -44,7 +44,7 @@ public sealed class TrayIconService : IDisposable
         var settings = new Forms.ToolStripMenuItem("Settings");
         settings.Click += (_, _) => _viewModel.OpenSettingsCommand.Execute(null);
 
-        var reset = new Forms.ToolStripMenuItem("Reset defaults");
+        var reset = new Forms.ToolStripMenuItem("Reset");
         reset.Click += (_, _) => _viewModel.ResetCommand.Execute(null);
 
         var exit = new Forms.ToolStripMenuItem("Exit");
@@ -129,9 +129,9 @@ public sealed class TrayIconService : IDisposable
 
     private void RefreshMenuText()
     {
-        _autoItem.Text = _viewModel.AutoEnabled ? "Turn auto off" : "Turn auto on";
+        _autoItem.Text = _viewModel.AutoEnabled ? "Automatic comfort on" : "Automatic comfort off";
         _autoItem.Checked = _viewModel.AutoEnabled;
-        _modeItem.Text = $"Current mode: {_viewModel.CurrentModeText}";
+        _modeItem.Text = $"Now: {_viewModel.CurrentModeText}";
         var tooltip = $"Light Pilot - {_viewModel.AutoStatus}";
         _notifyIcon.Text = tooltip.Length <= 63 ? tooltip : "Light Pilot";
     }

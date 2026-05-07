@@ -53,8 +53,8 @@ public sealed class MainWindowViewModel : ObservableObject
         PauseUntilTomorrowCommand = new RelayCommand(PauseUntilTomorrow);
         ResumeCommand = new RelayCommand(ResumeAuto);
         ResetCommand = new RelayCommand(ResetDefaults);
-        SetCalmCommand = new RelayCommand(() => SetIntensityPreset(35));
-        SetBalancedCommand = new RelayCommand(() => SetIntensityPreset(50));
+        SetCalmCommand = new RelayCommand(() => SetIntensityPreset(25));
+        SetBalancedCommand = new RelayCommand(() => SetIntensityPreset(45));
         SetDeepComfortCommand = new RelayCommand(() => SetIntensityPreset(70));
         OpenSettingsCommand = new RelayCommand(() => RequestSettings?.Invoke(this, EventArgs.Empty));
         ExitCommand = new RelayCommand(() => RequestExit?.Invoke(this, EventArgs.Empty));
@@ -159,9 +159,11 @@ public sealed class MainWindowViewModel : ObservableObject
         private set => SetProperty(ref _transitionText, value);
     }
 
-    public string BrightnessText => $"{BrightnessPercent}%";
+    public string BrightnessText => ComfortCopy.DescribeLightLevel(BrightnessPercent);
 
-    public string WarmthText => ColorTemperatureKelvin >= 5000 ? "Neutral" : ColorTemperatureKelvin >= 4000 ? "Soft" : "Warm";
+    public string WarmthText => ComfortCopy.DescribeWarmth(ColorTemperatureKelvin);
+
+    public string ComfortIntensityText => ComfortCopy.DescribeIntensity(ComfortIntensity);
 
     public string CurrentModeText => CurrentMode switch
     {
@@ -280,16 +282,21 @@ public sealed class MainWindowViewModel : ObservableObject
             if (primaryDecision is not null)
             {
                 CurrentMode = primaryDecision.Profile;
-                BrightnessPercent = primaryDecision.TargetBrightnessPercent;
-                ColorTemperatureKelvin = primaryDecision.TargetColorTemperatureKelvin;
-                Reason = primaryDecision.Reason;
-                TransitionText = $"{(int)primaryDecision.TransitionDuration.TotalSeconds}s transition";
+                if (primaryDecision.ShouldApply || BrightnessPercent == 0)
+                {
+                    BrightnessPercent = primaryDecision.TargetBrightnessPercent;
+                    ColorTemperatureKelvin = primaryDecision.TargetColorTemperatureKelvin;
+                }
+
+                Reason = ComfortCopy.DescribeReason(primaryDecision);
+                TransitionText = primaryDecision.ShouldApply ? "Adjusting gently" : "Comfort steady";
             }
 
             AutoStatus = BuildAutoStatus();
             UpdateTimerInterval();
             OnPropertyChanged(nameof(BrightnessText));
             OnPropertyChanged(nameof(WarmthText));
+            OnPropertyChanged(nameof(ComfortIntensityText));
             OnPropertyChanged(nameof(CurrentModeText));
         }
         finally
@@ -338,10 +345,15 @@ public sealed class MainWindowViewModel : ObservableObject
     private void UpdateMonitorStatus(int index, MonitorModel monitor, ComfortDecision decision, UserSettings effectiveSettings)
     {
         var status = Monitors[index];
-        status.BrightnessPercent = decision.TargetBrightnessPercent;
-        status.ColorTemperatureKelvin = monitor.SupportsColorTemperature ? decision.TargetColorTemperatureKelvin : 6500;
+        if (decision.ShouldApply || status.BrightnessPercent == 0)
+        {
+            status.BrightnessPercent = decision.TargetBrightnessPercent;
+            status.ColorTemperatureKelvin = monitor.SupportsColorTemperature ? decision.TargetColorTemperatureKelvin : 6500;
+        }
+
         status.ControlLayer = GetControlLayer(monitor, effectiveSettings);
-        status.Status = effectiveSettings.AutoEnabled && _pauseUntil is null ? "Auto ready" : "Held";
+        status.Status = effectiveSettings.AutoEnabled && _pauseUntil is null ? "Ready" : "Paused";
+        status.LightLevel = ComfortCopy.DescribeLightLevel(status.BrightnessPercent);
     }
 
     private string BuildAutoStatus()
@@ -356,7 +368,7 @@ public sealed class MainWindowViewModel : ObservableObject
             return $"Paused until {until.LocalDateTime:t}";
         }
 
-        return "Auto is active";
+        return "Auto active";
     }
 
     private static string GetControlLayer(MonitorModel monitor, UserSettings settings)

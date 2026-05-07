@@ -4,9 +4,9 @@
         Title="Light Pilot Settings"
         Icon="Assets/LightPilot.ico"
         Width="430"
-        Height="640"
-        MinWidth="410"
-        MinHeight="600"
+        Height="610"
+        MinWidth="400"
+        MinHeight="560"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize">
     <Grid Margin="18">
@@ -17,10 +17,10 @@
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0">
-            <Image DockPanel.Dock="Left" Source="Assets/LightPilotLogo.png" Width="34" Height="34" />
+            <Image DockPanel.Dock="Left" Source="Assets/LightPilotLogo.png" Width="36" Height="36" />
             <StackPanel Margin="10,0,0,0">
-                <TextBlock Text="Light Pilot Settings" FontSize="20" FontWeight="SemiBold" />
-                <TextBlock Text="Keep it calm, local, and automatic" Foreground="{StaticResource MutedTextBrush}" />
+                <TextBlock Text="Settings" FontSize="21" FontWeight="SemiBold" />
+                <TextBlock Text="Fine-tune only what you need" Foreground="{StaticResource MutedTextBrush}" />
             </StackPanel>
         </DockPanel>
 
@@ -30,41 +30,41 @@
                         Background="{StaticResource PanelBackgroundBrush}"
                         BorderBrush="{StaticResource BorderBrushMuted}"
                         BorderThickness="1"
-                        CornerRadius="6">
+                        CornerRadius="8">
                     <StackPanel>
-                        <CheckBox Content="Start with Windows in the tray"
-                                  AutomationProperties.Name="Start with Windows in the tray"
+                        <TextBlock Text="Everyday" FontWeight="SemiBold" />
+                        <CheckBox Margin="0,10,0,0"
+                                  Content="Open Light Pilot when Windows starts"
+                                  AutomationProperties.Name="Open Light Pilot when Windows starts"
                                   IsChecked="{Binding StartWithWindows, Mode=TwoWay}" />
 
-                        <TextBlock Margin="0,14,0,4"
-                                   Text="Comfort intensity"
-                                   Foreground="{StaticResource MutedTextBrush}" />
-                        <DockPanel>
-                            <Slider DockPanel.Dock="Left"
-                                    Width="300"
-                                    Minimum="0"
-                                    Maximum="100"
-                                    TickFrequency="5"
-                                    IsSnapToTickEnabled="True"
-                                    Value="{Binding ComfortIntensity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <DockPanel Margin="0,14,0,4">
+                            <TextBlock DockPanel.Dock="Left"
+                                       Text="Comfort"
+                                       Foreground="{StaticResource MutedTextBrush}" />
                             <TextBlock DockPanel.Dock="Right"
-                                       Text="{Binding ComfortIntensity, StringFormat={}{0}%}"
-                                       FontWeight="SemiBold"
-                                       VerticalAlignment="Center" />
+                                       Text="{Binding ComfortIntensityText}"
+                                       FontWeight="SemiBold" />
                         </DockPanel>
+                        <Slider Minimum="0"
+                                Maximum="100"
+                                TickFrequency="5"
+                                IsSnapToTickEnabled="True"
+                                AutomationProperties.Name="Comfort"
+                                Value="{Binding ComfortIntensity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                        <Grid Margin="0,14,0,0">
+                        <Grid Margin="0,16,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="12" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Wake" Foreground="{StaticResource MutedTextBrush}" />
+                                <TextBlock Text="Start day" Foreground="{StaticResource MutedTextBrush}" />
                                 <TextBox Text="{Binding WakeTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
                             <StackPanel Grid.Column="2">
-                                <TextBlock Text="Sleep" Foreground="{StaticResource MutedTextBrush}" />
+                                <TextBlock Text="Wind down" Foreground="{StaticResource MutedTextBrush}" />
                                 <TextBox Text="{Binding SleepTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
                         </Grid>
@@ -76,10 +76,14 @@
                         Background="{StaticResource PanelBackgroundBrush}"
                         BorderBrush="{StaticResource BorderBrushMuted}"
                         BorderThickness="1"
-                        CornerRadius="6">
+                        CornerRadius="8">
                     <StackPanel>
-                        <TextBlock Text="Brightness range" FontWeight="SemiBold" />
-                        <Grid Margin="0,10,0,0">
+                        <TextBlock Text="Safety" FontWeight="SemiBold" />
+                        <TextBlock Margin="0,4,0,10"
+                                   Text="Keep automatic changes inside a comfortable range."
+                                   TextWrapping="Wrap"
+                                   Foreground="{StaticResource MutedTextBrush}" />
+                        <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="12" />
@@ -109,50 +113,46 @@
                     </StackPanel>
                 </Border>
 
-                <Border Margin="0,12,0,0"
-                        Padding="14"
-                        Background="{StaticResource PanelBackgroundBrush}"
-                        BorderBrush="{StaticResource BorderBrushMuted}"
-                        BorderThickness="1"
-                        CornerRadius="6">
-                    <StackPanel>
-                        <TextBlock Text="Protection and control" FontWeight="SemiBold" />
-                        <CheckBox Margin="0,10,0,0"
-                                  Content="Use physical brightness when available"
-                                  AutomationProperties.Name="Use physical brightness when available"
-                                  IsChecked="{Binding EnableDdcCi, Mode=TwoWay}" />
-                        <CheckBox Content="Analyze screen brightness locally"
-                                  AutomationProperties.Name="Analyze screen brightness locally"
-                                  IsChecked="{Binding EnableContentBrightnessAnalysis, Mode=TwoWay}" />
-                        <CheckBox Content="Protect games and videos"
-                                  AutomationProperties.Name="Protect games and videos"
-                                  IsChecked="{Binding GamingVideoProtection, Mode=TwoWay}" />
-                    </StackPanel>
-                </Border>
+                <Expander Margin="0,12,0,0" Header="Advanced" IsExpanded="False">
+                    <StackPanel Margin="0,10,0,0">
+                        <Border Padding="14"
+                                Background="{StaticResource PanelBackgroundBrush}"
+                                BorderBrush="{StaticResource BorderBrushMuted}"
+                                BorderThickness="1"
+                                CornerRadius="8">
+                            <StackPanel>
+                                <TextBlock Text="Display control" FontWeight="SemiBold" />
+                                <CheckBox Margin="0,10,0,0"
+                                          Content="Use physical display brightness when available"
+                                          AutomationProperties.Name="Use physical display brightness when available"
+                                          IsChecked="{Binding EnableDdcCi, Mode=TwoWay}" />
+                                <CheckBox Content="Improve bright pages locally"
+                                          AutomationProperties.Name="Improve bright pages locally"
+                                          IsChecked="{Binding EnableContentBrightnessAnalysis, Mode=TwoWay}" />
+                                <CheckBox Content="Protect fullscreen games and videos"
+                                          AutomationProperties.Name="Protect fullscreen games and videos"
+                                          IsChecked="{Binding GamingVideoProtection, Mode=TwoWay}" />
 
-                <Border Margin="0,12,0,0"
-                        Padding="14"
-                        Background="{StaticResource PanelBackgroundBrush}"
-                        BorderBrush="{StaticResource BorderBrushMuted}"
-                        BorderThickness="1"
-                        CornerRadius="6">
-                    <StackPanel>
-                        <TextBlock Text="Transition speed" FontWeight="SemiBold" />
-                        <DockPanel Margin="0,10,0,0">
-                            <Slider DockPanel.Dock="Left"
-                                    Width="300"
-                                    Minimum="5"
-                                    Maximum="180"
-                                    TickFrequency="5"
-                                    IsSnapToTickEnabled="True"
-                                    Value="{Binding TransitionSpeedSeconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <TextBlock DockPanel.Dock="Right"
-                                       Text="{Binding TransitionSpeedSeconds, StringFormat={}{0}s}"
-                                       FontWeight="SemiBold"
-                                       VerticalAlignment="Center" />
-                        </DockPanel>
+                                <TextBlock Margin="0,16,0,4"
+                                           Text="Smooth changes"
+                                           Foreground="{StaticResource MutedTextBrush}" />
+                                <DockPanel>
+                                    <Slider DockPanel.Dock="Left"
+                                            Width="300"
+                                            Minimum="30"
+                                            Maximum="240"
+                                            TickFrequency="10"
+                                            IsSnapToTickEnabled="True"
+                                            Value="{Binding TransitionSpeedSeconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBlock DockPanel.Dock="Right"
+                                               Text="{Binding TransitionSpeedSeconds, StringFormat={}{0}s}"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center" />
+                                </DockPanel>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
-                </Border>
+                </Expander>
             </StackPanel>
         </ScrollViewer>
 

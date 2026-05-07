@@ -130,9 +130,9 @@ public sealed record UserSettings
 {
     public static UserSettings Default { get; } = new();
 
-    public int SchemaVersion { get; init; } = 1;
+    public int SchemaVersion { get; init; } = 2;
     public bool AutoEnabled { get; init; } = true;
-    public int ComfortIntensity { get; init; } = 50;
+    public int ComfortIntensity { get; init; } = 45;
     public TimeOnly WakeTime { get; init; } = new(7, 0);
     public TimeOnly SleepTime { get; init; } = new(23, 0);
     public int MinimumBrightnessPercent { get; init; } = 25;
@@ -140,7 +140,7 @@ public sealed record UserSettings
     public bool EnableDdcCi { get; init; } = true;
     public bool EnableContentBrightnessAnalysis { get; init; } = false;
     public bool GamingVideoProtection { get; init; } = true;
-    public TimeSpan TransitionSpeed { get; init; } = TimeSpan.FromSeconds(45);
+    public TimeSpan TransitionSpeed { get; init; } = TimeSpan.FromSeconds(90);
     public IReadOnlyDictionary<string, AppCategory> AppOverrides { get; init; } = new Dictionary<string, AppCategory>(StringComparer.OrdinalIgnoreCase);
     public IReadOnlyList<MonitorPreference> MonitorPreferences { get; init; } = Array.Empty<MonitorPreference>();
 }

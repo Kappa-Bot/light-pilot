@@ -32,8 +32,16 @@ public sealed class SettingsViewModel : ObservableObject
     public int ComfortIntensity
     {
         get => _comfortIntensity;
-        set => SetProperty(ref _comfortIntensity, value);
+        set
+        {
+            if (SetProperty(ref _comfortIntensity, value))
+            {
+                OnPropertyChanged(nameof(ComfortIntensityText));
+            }
+        }
     }
+
+    public string ComfortIntensityText => ComfortCopy.DescribeIntensity(ComfortIntensity);
 
     public string WakeTime
     {
@@ -112,7 +120,7 @@ public sealed class SettingsViewModel : ObservableObject
             EnableDdcCi = EnableDdcCi,
             EnableContentBrightnessAnalysis = EnableContentBrightnessAnalysis,
             GamingVideoProtection = GamingVideoProtection,
-            TransitionSpeed = TimeSpan.FromSeconds(Math.Clamp(TransitionSpeedSeconds, 5, 180))
+            TransitionSpeed = TimeSpan.FromSeconds(Math.Clamp(TransitionSpeedSeconds, 30, 240))
         };
     }
 

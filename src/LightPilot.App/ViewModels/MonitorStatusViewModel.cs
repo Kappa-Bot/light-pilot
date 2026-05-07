@@ -6,6 +6,7 @@ public sealed class MonitorStatusViewModel : ObservableObject
     private int _colorTemperatureKelvin;
     private string _controlLayer = "";
     private string _status = "";
+    private string _lightLevel = "";
 
     public MonitorStatusViewModel(string name)
     {
@@ -36,5 +37,11 @@ public sealed class MonitorStatusViewModel : ObservableObject
     {
         get => _status;
         set => SetProperty(ref _status, value);
+    }
+
+    public string LightLevel
+    {
+        get => _lightLevel;
+        set => SetProperty(ref _lightLevel, value);
     }
 }

@@ -2,19 +2,20 @@
 
 ![Light Pilot logo](src/LightPilot.App/Assets/LightPilotLogo.png)
 
-**Light Pilot** is a local-first Windows screen comfort utility. It runs quietly in the tray, adapts brightness and warmth gently, protects games/videos from disruptive changes, and keeps all screen analysis on-device.
+**Light Pilot** is a local-first Windows screen comfort utility. It runs quietly in the tray, adapts brightness and warmth gradually, protects games/videos from disruptive changes, and keeps all screen analysis on-device.
 
 Think CareUEyes/f.lux-style comfort, with a calmer adaptive engine and a cleaner professional UI.
 
 ## Highlights
 
 - Tray-first Windows desktop app
-- Compact GUI with quick comfort presets: Calm, Balanced, Deep
+- Compact GUI with quick comfort presets: Light, Balanced, Deep
 - Gentle adaptive brightness: max 3 percentage points per decision
+- Gentle warmth transitions: max 200K per decision
 - Less aggressive default comfort intensity
 - DDC/CI monitor brightness when supported
 - WMI laptop brightness fallback
-- Software overlay fallback
+- Smooth warm overlay for perceived color temperature
 - Optional local-only content brightness analysis, off by default
 - Startup registration with background launch
 - Single-instance behavior: opening the app brings the existing tray instance forward

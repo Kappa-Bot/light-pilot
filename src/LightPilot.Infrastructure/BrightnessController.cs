@@ -39,6 +39,7 @@ public sealed class BrightnessController : IBrightnessController
         {
             if (await _ddcCiApi.TrySetBrightnessAsync(monitor, brightness, cancellationToken).ConfigureAwait(false))
             {
+                await _overlayController.ApplyAsync(monitor, decision.OverlayOpacity, decision.TargetColorTemperatureKelvin, cancellationToken).ConfigureAwait(false);
                 _lastWrites[monitor.Id] = now;
                 return;
             }
@@ -46,6 +47,7 @@ public sealed class BrightnessController : IBrightnessController
 
         if (await _windowsBrightnessApi.TrySetBrightnessAsync(monitor, brightness, cancellationToken).ConfigureAwait(false))
         {
+            await _overlayController.ApplyAsync(monitor, decision.OverlayOpacity, decision.TargetColorTemperatureKelvin, cancellationToken).ConfigureAwait(false);
             _lastWrites[monitor.Id] = now;
             return;
         }

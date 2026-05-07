@@ -6,6 +6,7 @@ Run these checks after `dotnet build` and `dotnet test` pass.
 
 - Start `LightPilot.App`.
 - Confirm the compact main window opens.
+- Confirm the main window uses simple labels such as `Comfortable`, `Soft`, and `Adjusting gently`.
 - Confirm closing the window hides it instead of terminating the app.
 - Confirm the tray icon remains available.
 
@@ -14,6 +15,7 @@ Run these checks after `dotnet build` and `dotnet test` pass.
 - Left click opens the main window.
 - Right click shows Auto on/off, Pause 30 min, Pause until tomorrow, Current mode, Settings, Exit.
 - Pause changes the main window state.
+- Resume returns to gradual automatic adjustment.
 - Exit shuts down tray icon and app process.
 
 ## Settings
@@ -28,12 +30,13 @@ Run these checks after `dotnet build` and `dotnet test` pass.
 - Open a browser, VS Code, VLC, and a fullscreen app.
 - Confirm current mode/reason updates without crashes.
 - Confirm fullscreen video/game contexts avoid brightness jumps.
+- Confirm warmth changes gradually rather than jumping to a very warm tone.
 
 ## Monitor Safety
 
 - Run on a monitor without DDC/CI support.
 - Confirm the app does not crash.
-- Confirm software fallback status is shown.
+- Confirm the app remains understandable without showing technical control details in the main window.
 
 ## Packaging
 

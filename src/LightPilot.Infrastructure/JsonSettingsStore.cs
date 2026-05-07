@@ -95,13 +95,31 @@ public sealed class JsonSettingsStore : ISettingsStore
             return UserSettings.Default;
         }
 
+        var intensity = Math.Clamp(settings.ComfortIntensity, 0, 100);
+        var transitionSpeed = settings.TransitionSpeed;
+        if (settings.SchemaVersion < 2)
+        {
+            if (intensity == 50)
+            {
+                intensity = UserSettings.Default.ComfortIntensity;
+            }
+
+            if (transitionSpeed == TimeSpan.FromSeconds(45) || transitionSpeed == TimeSpan.Zero)
+            {
+                transitionSpeed = UserSettings.Default.TransitionSpeed;
+            }
+        }
+
+        transitionSpeed = TimeSpan.FromSeconds(Math.Clamp(transitionSpeed.TotalSeconds, 30, 240));
         var minimum = Math.Clamp(settings.MinimumBrightnessPercent, 15, 100);
         var maximum = Math.Clamp(settings.MaximumBrightnessPercent, minimum, 100);
         return settings with
         {
-            ComfortIntensity = Math.Clamp(settings.ComfortIntensity, 0, 100),
+            SchemaVersion = UserSettings.Default.SchemaVersion,
+            ComfortIntensity = intensity,
             MinimumBrightnessPercent = minimum,
-            MaximumBrightnessPercent = maximum
+            MaximumBrightnessPercent = maximum,
+            TransitionSpeed = transitionSpeed
         };
     }
 

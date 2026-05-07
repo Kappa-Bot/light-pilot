@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using LightPilot.Core;
 using LightPilot.Infrastructure;
 
@@ -21,17 +22,34 @@ public sealed class WpfOverlayController : IOverlayController, IDisposable
         System.Windows.Application.Current.Dispatcher.Invoke(() =>
         {
             var window = GetOrCreate(monitor.Id);
-            window.Background = new SolidColorBrush(ToWarmColor(colorTemperatureKelvin, opacity));
-            window.Opacity = Math.Clamp(opacity, 0, 0.35);
+            var targetOpacity = Math.Clamp(opacity, 0, 0.35);
+            window.Background = new SolidColorBrush(ToWarmColor(colorTemperatureKelvin, targetOpacity));
 
-            if (window.Opacity <= 0.01)
+            if (targetOpacity > 0.01 && !window.IsVisible)
             {
-                window.Hide();
-            }
-            else if (!window.IsVisible)
-            {
+                window.Opacity = 0;
                 window.Show();
             }
+
+            var fade = new DoubleAnimation(targetOpacity, TimeSpan.FromSeconds(2))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut }
+            };
+            fade.Completed += (_, _) =>
+            {
+                if (targetOpacity <= 0.01)
+                {
+                    window.Hide();
+                }
+            };
+
+            if (targetOpacity <= 0.01 && !window.IsVisible)
+            {
+                window.Opacity = 0;
+                return;
+            }
+
+            window.BeginAnimation(Window.OpacityProperty, fade, HandoffBehavior.SnapshotAndReplace);
         });
 
         return ValueTask.CompletedTask;

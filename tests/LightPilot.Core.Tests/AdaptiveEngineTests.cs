@@ -20,7 +20,7 @@ public sealed class AdaptiveEngineTests
 
         Assert.Equal(ComfortProfileId.Reading, decision.Profile);
         Assert.Equal(67, decision.TargetBrightnessPercent);
-        Assert.True(decision.TargetColorTemperatureKelvin <= 3600);
+        Assert.InRange(decision.TargetColorTemperatureKelvin, 6300, 6499);
         Assert.Equal("Bright reading content at night", decision.Reason);
         Assert.True(decision.ShouldApply);
     }
@@ -61,7 +61,7 @@ public sealed class AdaptiveEngineTests
 
         Assert.Equal(ComfortProfileId.Development, decision.Profile);
         Assert.Equal(67, decision.TargetBrightnessPercent);
-        Assert.InRange(decision.TargetColorTemperatureKelvin, 3300, 4300);
+        Assert.InRange(decision.TargetColorTemperatureKelvin, 6300, 6499);
         Assert.Equal("Late development session", decision.Reason);
     }
 
@@ -114,6 +114,23 @@ public sealed class AdaptiveEngineTests
         var decision = engine.Evaluate(snapshot, AdaptiveEngineState.Empty, UserSettings.Default);
 
         Assert.Equal(43, decision.TargetBrightnessPercent);
+    }
+
+    [Fact]
+    public void AutomaticWarmthChangeIsLimitedToTwoHundredKelvinPerDecision()
+    {
+        var engine = new AdaptiveEngine();
+        var snapshot = TestSnapshots.Default with
+        {
+            Now = new DateTimeOffset(2026, 5, 7, 23, 30, 0, TimeSpan.Zero),
+            CurrentColorTemperatureKelvin = 6500,
+            AppContext = new AppContextModel("chrome.exe", AppCategory.Browser, isFullscreen: false),
+            Content = new ContentLuminanceSample(true, 0.82, 0.74, 0.81, 0, LuminanceClassification.MostlyWhite)
+        };
+
+        var decision = engine.Evaluate(snapshot, AdaptiveEngineState.Empty, UserSettings.Default);
+
+        Assert.Equal(6300, decision.TargetColorTemperatureKelvin);
     }
 
     [Fact]

@@ -1,5 +1,6 @@
 using LightPilot.Core;
 using LightPilot.Infrastructure;
+using System.Text.Json;
 
 namespace LightPilot.Infrastructure.Tests;
 
@@ -40,6 +41,48 @@ public sealed class JsonSettingsStoreTests
         Assert.False(actual.EnableDdcCi);
         Assert.True(actual.EnableContentBrightnessAnalysis);
         Assert.Equal(30, actual.MinimumBrightnessPercent);
+    }
+
+    [Fact]
+    public async Task LoadAsyncMigratesV1DefaultComfortToGentlerDefaults()
+    {
+        using var temp = new TempDirectory();
+        var path = Path.Combine(temp.Path, "settings.json");
+        var legacy = new UserSettings
+        {
+            SchemaVersion = 1,
+            ComfortIntensity = 50,
+            TransitionSpeed = TimeSpan.FromSeconds(45)
+        };
+        await File.WriteAllTextAsync(path, JsonSerializer.Serialize(legacy));
+        var store = new JsonSettingsStore(path);
+
+        var settings = await store.LoadAsync(CancellationToken.None);
+
+        Assert.Equal(2, settings.SchemaVersion);
+        Assert.Equal(45, settings.ComfortIntensity);
+        Assert.Equal(TimeSpan.FromSeconds(90), settings.TransitionSpeed);
+    }
+
+    [Fact]
+    public async Task LoadAsyncPreservesV1CustomComfortDuringMigration()
+    {
+        using var temp = new TempDirectory();
+        var path = Path.Combine(temp.Path, "settings.json");
+        var legacy = new UserSettings
+        {
+            SchemaVersion = 1,
+            ComfortIntensity = 72,
+            TransitionSpeed = TimeSpan.FromSeconds(130)
+        };
+        await File.WriteAllTextAsync(path, JsonSerializer.Serialize(legacy));
+        var store = new JsonSettingsStore(path);
+
+        var settings = await store.LoadAsync(CancellationToken.None);
+
+        Assert.Equal(2, settings.SchemaVersion);
+        Assert.Equal(72, settings.ComfortIntensity);
+        Assert.Equal(TimeSpan.FromSeconds(130), settings.TransitionSpeed);
     }
 
     [Fact]

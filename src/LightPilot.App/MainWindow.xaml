@@ -6,14 +6,13 @@
         mc:Ignorable="d"
         Title="Light Pilot"
         Icon="Assets/LightPilot.ico"
-        Width="438"
-        MinWidth="410"
-        Height="570"
-        MinHeight="530"
+        Width="420"
+        MinWidth="390"
+        Height="520"
+        MinHeight="490"
         WindowStartupLocation="CenterScreen">
     <Grid Margin="18">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -21,37 +20,25 @@
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0" LastChildFill="True">
-            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-                <Border Width="48"
-                        Height="48"
-                        CornerRadius="14"
-                        Background="{StaticResource BrandGradientBrush}">
-                    <Image Source="Assets/LightPilotLogo.png"
-                           Width="38"
-                           Height="38"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center" />
-                </Border>
-                <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
-                    <TextBlock Text="Light Pilot" FontSize="22" FontWeight="SemiBold" />
-                    <TextBlock Text="Comfort autopilot for your screen" Foreground="{StaticResource MutedTextBrush}" />
-                </StackPanel>
-            </StackPanel>
-            <Border DockPanel.Dock="Right"
-                    Background="#E8F2F5"
-                    BorderBrush="#B9D9E5"
-                    BorderThickness="1"
-                    CornerRadius="8"
-                    Padding="10,5"
-                    VerticalAlignment="Top">
-                <TextBlock Text="{Binding AutoStatus}"
-                           Foreground="#0D5168"
-                           FontWeight="SemiBold" />
+            <Border DockPanel.Dock="Left"
+                    Width="52"
+                    Height="52"
+                    CornerRadius="16"
+                    Background="{StaticResource BrandGradientBrush}">
+                <Image Source="Assets/LightPilotLogo.png"
+                       Width="40"
+                       Height="40"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center" />
             </Border>
+            <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                <TextBlock Text="Light Pilot" FontSize="23" FontWeight="SemiBold" />
+                <TextBlock Text="Automatic screen comfort" Foreground="{StaticResource MutedTextBrush}" />
+            </StackPanel>
         </DockPanel>
 
         <Border Grid.Row="1"
-                Margin="0,16,0,0"
+                Margin="0,18,0,0"
                 Padding="18"
                 Background="{StaticResource PanelBackgroundBrush}"
                 BorderBrush="{StaticResource BorderBrushMuted}"
@@ -59,53 +46,60 @@
                 CornerRadius="8">
             <StackPanel>
                 <DockPanel>
-                    <StackPanel DockPanel.Dock="Left">
-                        <TextBlock Text="{Binding CurrentModeText}"
-                                   FontSize="28"
+                    <Border DockPanel.Dock="Right"
+                            Background="#E8F2F5"
+                            BorderBrush="#B9D9E5"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="10,5"
+                            VerticalAlignment="Top">
+                        <TextBlock Text="{Binding AutoStatus}"
+                                   Foreground="#0D5168"
                                    FontWeight="SemiBold" />
-                        <TextBlock Margin="0,4,0,0"
+                    </Border>
+                    <StackPanel>
+                        <TextBlock Text="{Binding CurrentModeText}"
+                                   FontSize="27"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Margin="0,5,22,0"
                                    Text="{Binding Reason}"
-                                   FontSize="14"
                                    TextWrapping="Wrap"
                                    Foreground="{StaticResource MutedTextBrush}" />
                     </StackPanel>
                 </DockPanel>
 
-                <Grid Margin="0,18,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="16" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
+                <UniformGrid Columns="3" Margin="0,18,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Light" Foreground="{StaticResource MutedTextBrush}" />
+                        <TextBlock Text="{Binding BrightnessText}" FontSize="18" FontWeight="SemiBold" />
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Warmth" Foreground="{StaticResource MutedTextBrush}" />
+                        <TextBlock Text="{Binding WarmthText}" FontSize="18" FontWeight="SemiBold" />
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Flow" Foreground="{StaticResource MutedTextBrush}" />
+                        <TextBlock Text="{Binding TransitionText}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" />
+                    </StackPanel>
+                </UniformGrid>
 
-                    <Border Grid.Column="0" Background="#F3F8FA" CornerRadius="8" Padding="12">
-                        <StackPanel>
-                            <TextBlock Text="Brightness" Foreground="{StaticResource MutedTextBrush}" />
-                            <TextBlock Text="{Binding BrightnessText}" FontSize="25" FontWeight="SemiBold" />
-                        </StackPanel>
-                    </Border>
-
-                    <Border Grid.Column="2" Background="#FFF7E7" CornerRadius="8" Padding="12">
-                        <StackPanel>
-                            <TextBlock Text="Warmth" Foreground="{StaticResource MutedTextBrush}" />
-                            <TextBlock Text="{Binding WarmthText}" FontSize="25" FontWeight="SemiBold" />
-                        </StackPanel>
-                    </Border>
-                </Grid>
-
-                <StackPanel Margin="0,18,0,0">
+                <StackPanel Margin="0,20,0,0">
                     <DockPanel>
-                        <TextBlock DockPanel.Dock="Left" Text="Comfort intensity" Foreground="{StaticResource MutedTextBrush}" />
-                        <TextBlock DockPanel.Dock="Right" Text="{Binding ComfortIntensity, StringFormat={}{0}%}" FontWeight="SemiBold" />
+                        <TextBlock DockPanel.Dock="Left"
+                                   Text="Comfort"
+                                   Foreground="{StaticResource MutedTextBrush}" />
+                        <TextBlock DockPanel.Dock="Right"
+                                   Text="{Binding ComfortIntensityText}"
+                                   FontWeight="SemiBold" />
                     </DockPanel>
                     <Slider Minimum="0"
                             Maximum="100"
                             TickFrequency="5"
                             IsSnapToTickEnabled="True"
-                            AutomationProperties.Name="Comfort intensity"
+                            AutomationProperties.Name="Comfort"
                             Value="{Binding ComfortIntensity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <UniformGrid Columns="3" Margin="0,8,0,0">
-                        <Button Content="Calm"
+                    <UniformGrid Columns="3" Margin="0,9,0,0">
+                        <Button Content="Light"
                                 Margin="0,0,6,0"
                                 Style="{StaticResource QuietButton}"
                                 Command="{Binding SetCalmCommand}" />
@@ -122,56 +116,53 @@
             </StackPanel>
         </Border>
 
-        <TextBlock Grid.Row="2"
-                   Margin="0,16,0,8"
-                   Text="Displays"
-                   FontWeight="SemiBold" />
-
-        <Border Grid.Row="3"
-                Padding="12"
+        <Border Grid.Row="2"
+                Margin="0,14,0,0"
+                Padding="14"
                 Background="{StaticResource PanelBackgroundBrush}"
                 BorderBrush="{StaticResource BorderBrushMuted}"
                 BorderThickness="1"
                 CornerRadius="8">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding Monitors}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0,2,0,12">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="8" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="Displays" FontWeight="SemiBold" />
+                <ScrollViewer Margin="0,8,0,0" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Monitors}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,3,0,12">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="8" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
 
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name}" FontWeight="SemiBold" />
-                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Status}" Foreground="{StaticResource MutedTextBrush}" />
-                                <ProgressBar Grid.Row="2"
-                                             Grid.ColumnSpan="2"
-                                             Minimum="0"
-                                             Maximum="100"
-                                             Value="{Binding BrightnessPercent}" />
-                                <DockPanel Grid.Row="3" Grid.ColumnSpan="2" Margin="0,6,0,0">
-                                    <TextBlock DockPanel.Dock="Left"
-                                               Text="{Binding ControlLayer}"
-                                               Foreground="{StaticResource MutedTextBrush}" />
-                                    <TextBlock DockPanel.Dock="Right"
-                                               Text="{Binding BrightnessPercent, StringFormat={}{0}%}"
-                                               FontWeight="SemiBold" />
-                                </DockPanel>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+                                    <StackPanel Grid.Row="0" Grid.Column="0">
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                        <TextBlock Text="{Binding LightLevel}" Foreground="{StaticResource MutedTextBrush}" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Row="0"
+                                               Grid.Column="1"
+                                               Text="{Binding Status}"
+                                               Foreground="{StaticResource MutedTextBrush}"
+                                               VerticalAlignment="Center" />
+                                    <ProgressBar Grid.Row="2"
+                                                 Grid.ColumnSpan="2"
+                                                 Minimum="0"
+                                                 Maximum="100"
+                                                 Value="{Binding BrightnessPercent}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
         </Border>
 
-        <Grid Grid.Row="4" Margin="0,16,0,0">
+        <Grid Grid.Row="3" Margin="0,16,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="8" />

@@ -18,7 +18,21 @@ public sealed class BrightnessControllerTests
 
         Assert.Equal(52, ddc.LastBrightness);
         Assert.Null(windows.LastBrightness);
-        Assert.Null(overlay.LastOpacity);
+        Assert.Equal(0, overlay.LastOpacity);
+    }
+
+    [Fact]
+    public async Task AppliesWarmOverlayWhenHardwareBrightnessSucceeds()
+    {
+        var ddc = new FakeDdcCiApi(canSet: true);
+        var overlay = new FakeOverlayController();
+        var controller = new BrightnessController(ddc, new FakeWindowsBrightnessApi(canSet: false), overlay, TimeProvider.System);
+        var monitor = Monitor with { SupportsBrightnessControl = true };
+
+        await controller.ApplyAsync(monitor, Decision(52, overlayOpacity: 0.08), UserSettings.Default, CancellationToken.None);
+
+        Assert.Equal(52, ddc.LastBrightness);
+        Assert.Equal(0.08, overlay.LastOpacity);
     }
 
     [Fact]

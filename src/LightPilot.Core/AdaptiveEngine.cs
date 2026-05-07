@@ -104,6 +104,7 @@ public sealed class AdaptiveEngine
         brightness = LimitStep(snapshot.CurrentBrightness, brightness, maxStep: 3);
         brightness = ClampBrightness(brightness, snapshot.Monitor, settings);
         kelvin = Math.Clamp(kelvin, 2800, 6500);
+        kelvin = LimitStep(snapshot.CurrentColorTemperatureKelvin, kelvin, maxStep: 200);
         var overlay = Math.Clamp((6500 - kelvin) / 3700d * 0.14, 0, 0.24);
 
         return new LightTarget(brightness, kelvin, overlay);

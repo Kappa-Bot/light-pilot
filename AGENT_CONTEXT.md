@@ -15,6 +15,8 @@ Do not turn the app into a dashboard. Normal UI must avoid charts, raw logs, and
 - No screenshots, pixels, app content, or window titles should be persisted.
 - Brightness control must tolerate unsupported monitors.
 - Fullscreen games/videos/presentations should not receive disruptive changes.
+- Normal UI should be human-first: avoid control-layer names, raw reasons, and percentage-heavy presentation.
+- Adaptive transitions should remain gradual: brightness max 3 points per decision, warmth max 200K per decision.
 
 ## Project Shape
 

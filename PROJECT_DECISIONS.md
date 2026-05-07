@@ -26,7 +26,7 @@ Core has no WPF or Win32 dependency. Infrastructure wraps native APIs behind int
 - The engine never targets below an effective `15%` hard floor.
 - DDC/CI writes are throttled to avoid rapid hardware calls.
 - Fullscreen gaming/video/presentation contexts avoid disruptive brightness changes.
-- Auto mode uses gentle steps: at most 3 brightness points per decision, with cooldown and hysteresis.
+- Auto mode uses gentle steps: at most 3 brightness points and 200K warmth per decision, with cooldown and hysteresis.
 
 ## Monitor Control
 
@@ -36,7 +36,7 @@ WMI brightness is used for laptop/internal panels when available. Software overl
 
 ## UI
 
-The UI is intentionally small. The main window answers only:
+The UI is intentionally small and avoids technical labels in the normal path. The main window answers only:
 
 - Is Auto active?
 - What mode is current?
@@ -44,4 +44,4 @@ The UI is intentionally small. The main window answers only:
 - Why?
 - Can I pause or open settings?
 
-Advanced details stay in Settings or local diagnostics.
+Advanced details stay in Settings or local diagnostics. Main UI uses human labels such as `Comfortable`, `Soft`, and `Adjusting gently` instead of raw control-layer names.
