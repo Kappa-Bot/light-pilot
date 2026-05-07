@@ -39,6 +39,9 @@ public sealed class TrayIconService : IDisposable
         var resume = new Forms.ToolStripMenuItem("Resume");
         resume.Click += (_, _) => _viewModel.ResumeCommand.Execute(null);
 
+        var clearComfort = new Forms.ToolStripMenuItem("Clear comfort for 30 minutes");
+        clearComfort.Click += (_, _) => _viewModel.ResetComfortCommand.Execute(null);
+
         _modeItem = new Forms.ToolStripMenuItem { Enabled = false };
 
         var settings = new Forms.ToolStripMenuItem("Settings");
@@ -66,6 +69,7 @@ public sealed class TrayIconService : IDisposable
             pauseHour,
             pauseTomorrow,
             resume,
+            clearComfort,
             new Forms.ToolStripSeparator(),
             _modeItem,
             new Forms.ToolStripSeparator(),

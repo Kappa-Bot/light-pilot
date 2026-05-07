@@ -149,6 +149,19 @@
                                                FontWeight="SemiBold"
                                                VerticalAlignment="Center" />
                                 </DockPanel>
+
+                                <TextBlock Margin="0,16,0,4"
+                                           Text="App rules"
+                                           Foreground="{StaticResource MutedTextBrush}" />
+                                <TextBox MinHeight="78"
+                                         AcceptsReturn="True"
+                                         VerticalScrollBarVisibility="Auto"
+                                         TextWrapping="NoWrap"
+                                         AutomationProperties.Name="App rules"
+                                         Text="{Binding AppOverridesText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Margin="0,5,0,0"
+                                           Text="Example: chrome.exe=Development"
+                                           Foreground="{StaticResource MutedTextBrush}" />
                             </StackPanel>
                         </Border>
                     </StackPanel>

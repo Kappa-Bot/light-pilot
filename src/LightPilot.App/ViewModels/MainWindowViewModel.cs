@@ -53,6 +53,9 @@ public sealed class MainWindowViewModel : ObservableObject
         PauseUntilTomorrowCommand = new RelayCommand(PauseUntilTomorrow);
         ResumeCommand = new RelayCommand(ResumeAuto);
         ResetCommand = new RelayCommand(ResetDefaults);
+        ResetComfortCommand = new RelayCommand(() => _ = ResetComfortNowAsync());
+        TooBrightCommand = new RelayCommand(() => ApplyComfortFeedback(ComfortFeedback.TooBright));
+        TooDimCommand = new RelayCommand(() => ApplyComfortFeedback(ComfortFeedback.TooDim));
         SetCalmCommand = new RelayCommand(() => SetIntensityPreset(25));
         SetBalancedCommand = new RelayCommand(() => SetIntensityPreset(45));
         SetDeepComfortCommand = new RelayCommand(() => SetIntensityPreset(70));
@@ -77,6 +80,9 @@ public sealed class MainWindowViewModel : ObservableObject
     public RelayCommand PauseUntilTomorrowCommand { get; }
     public RelayCommand ResumeCommand { get; }
     public RelayCommand ResetCommand { get; }
+    public RelayCommand ResetComfortCommand { get; }
+    public RelayCommand TooBrightCommand { get; }
+    public RelayCommand TooDimCommand { get; }
     public RelayCommand SetCalmCommand { get; }
     public RelayCommand SetBalancedCommand { get; }
     public RelayCommand SetDeepComfortCommand { get; }
@@ -250,6 +256,7 @@ public sealed class MainWindowViewModel : ObservableObject
             var appContext = effectiveSettings.AutoEnabled
                 ? await Task.Run(() => SafeDetectContext()).ConfigureAwait(true)
                 : new AppContextModel("LightPilot.App", AppCategory.System, false);
+            appContext = ApplyAppOverrides(appContext, effectiveSettings);
             var content = effectiveSettings.AutoEnabled
                 ? await SampleContentAsync(effectiveSettings.EnableContentBrightnessAnalysis).ConfigureAwait(true)
                 : ContentLuminanceSample.Unknown;
@@ -315,6 +322,18 @@ public sealed class MainWindowViewModel : ObservableObject
         {
             return new AppContextModel("unknown.exe", AppCategory.Unknown, false);
         }
+    }
+
+    private static AppContextModel ApplyAppOverrides(AppContextModel appContext, UserSettings settings)
+    {
+        if (string.IsNullOrWhiteSpace(appContext.ProcessName))
+        {
+            return appContext;
+        }
+
+        var mapper = AppCategoryMapper.CreateDefault(settings.AppOverrides);
+        var category = mapper.Classify(appContext.ProcessName);
+        return category == appContext.Category ? appContext : appContext with { Category = category };
     }
 
     private async Task<ContentLuminanceSample> SampleContentAsync(bool enabled)
@@ -441,6 +460,33 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         _pauseUntil = null;
         UpdateSettings(UserSettings.Default, persist: true);
+    }
+
+    private async Task ResetComfortNowAsync()
+    {
+        _pauseUntil = DateTimeOffset.Now.AddMinutes(30);
+        var brightness = BrightnessPercent == 0 ? 62 : BrightnessPercent;
+        var decision = new ComfortDecision(ComfortProfileId.Paused, brightness, 6500, 0, TimeSpan.FromSeconds(2), true, "Comfort cleared", new[] { "ComfortCleared" });
+
+        foreach (var monitor in _monitorModels)
+        {
+            await _brightnessController.ApplyAsync(monitor, decision, _settings, CancellationToken.None).ConfigureAwait(true);
+        }
+
+        ColorTemperatureKelvin = 6500;
+        Reason = "Comfort cleared for 30 minutes";
+        TransitionText = "Clear";
+        AutoStatus = BuildAutoStatus();
+        OnPropertyChanged(nameof(WarmthText));
+    }
+
+    private void ApplyComfortFeedback(ComfortFeedback feedback)
+    {
+        var updated = ComfortPreferenceAdvisor.Apply(_settings, feedback);
+        UpdateSettings(updated, persist: true);
+        Reason = feedback == ComfortFeedback.TooBright ? "Got it. Making light softer." : "Got it. Keeping light clearer.";
+        TransitionText = "Learning";
+        OnPropertyChanged(nameof(ComfortIntensityText));
     }
 
     private void SetIntensityPreset(int intensity)

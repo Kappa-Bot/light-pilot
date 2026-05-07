@@ -63,6 +63,27 @@ public sealed class BrightnessControllerTests
         Assert.Equal(50, ddc.LastBrightness);
     }
 
+    [Fact]
+    public async Task BacksOffDdcAfterRepeatedFailures()
+    {
+        var time = new FakeTimeProvider(new DateTimeOffset(2026, 5, 7, 12, 0, 0, TimeSpan.Zero));
+        var ddc = new FakeDdcCiApi(canSet: false);
+        var windows = new FakeWindowsBrightnessApi(canSet: true);
+        var controller = new BrightnessController(ddc, windows, new FakeOverlayController(), time);
+        var monitor = Monitor with { SupportsBrightnessControl = true };
+
+        for (var i = 0; i < 3; i++)
+        {
+            await controller.ApplyAsync(monitor, Decision(50 + i), UserSettings.Default, CancellationToken.None);
+            time.Advance(TimeSpan.FromSeconds(3));
+        }
+
+        await controller.ApplyAsync(monitor, Decision(60), UserSettings.Default, CancellationToken.None);
+
+        Assert.Equal(3, ddc.WriteCount);
+        Assert.Equal(60, windows.LastBrightness);
+    }
+
     private static MonitorModel Monitor => new("m1", "Desk", true, true, 15, 100, 0);
 
     private static ComfortDecision Decision(int brightness, double overlayOpacity = 0)

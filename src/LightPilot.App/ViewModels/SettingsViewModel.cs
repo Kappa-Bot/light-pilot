@@ -14,6 +14,7 @@ public sealed class SettingsViewModel : ObservableObject
     private bool _enableContentBrightnessAnalysis;
     private bool _gamingVideoProtection;
     private int _transitionSpeedSeconds;
+    private string _appOverridesText = "";
 
     public SettingsViewModel(UserSettings settings, bool startWithWindows)
     {
@@ -103,6 +104,12 @@ public sealed class SettingsViewModel : ObservableObject
         set => SetProperty(ref _transitionSpeedSeconds, value);
     }
 
+    public string AppOverridesText
+    {
+        get => _appOverridesText;
+        set => SetProperty(ref _appOverridesText, value);
+    }
+
     public UserSettings ToSettings(UserSettings current)
     {
         var wakeTime = ParseTime(WakeTime, current.WakeTime);
@@ -120,7 +127,8 @@ public sealed class SettingsViewModel : ObservableObject
             EnableDdcCi = EnableDdcCi,
             EnableContentBrightnessAnalysis = EnableContentBrightnessAnalysis,
             GamingVideoProtection = GamingVideoProtection,
-            TransitionSpeed = TimeSpan.FromSeconds(Math.Clamp(TransitionSpeedSeconds, 30, 240))
+            TransitionSpeed = TimeSpan.FromSeconds(Math.Clamp(TransitionSpeedSeconds, 30, 240)),
+            AppOverrides = AppOverrideTextCodec.Parse(AppOverridesText)
         };
     }
 
@@ -136,6 +144,7 @@ public sealed class SettingsViewModel : ObservableObject
         EnableContentBrightnessAnalysis = settings.EnableContentBrightnessAnalysis;
         GamingVideoProtection = settings.GamingVideoProtection;
         TransitionSpeedSeconds = (int)Math.Round(settings.TransitionSpeed.TotalSeconds);
+        AppOverridesText = AppOverrideTextCodec.Format(settings.AppOverrides);
     }
 
     private void Reset()

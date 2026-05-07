@@ -41,5 +41,13 @@ Run these checks after `dotnet build` and `dotnet test` pass.
 ## Packaging
 
 ```powershell
-dotnet publish src/LightPilot.App/LightPilot.App.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
+.\scripts\package-release.ps1 -Version 0.1.0
 ```
+
+## Installer Scripts
+
+- Run `.\scripts\install-local.ps1`.
+- Confirm app starts in the tray.
+- Confirm Start Menu shortcut `Light Pilot` exists.
+- Confirm startup registry uses `--background`.
+- Run `.\scripts\smoke.ps1`.

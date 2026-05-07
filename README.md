@@ -59,27 +59,27 @@ dotnet test LightPilot.sln
 ## Package
 
 ```powershell
-dotnet publish src/LightPilot.App/LightPilot.App.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
+.\scripts\package-release.ps1 -Version 0.1.0
 ```
 
 ## Local Install
 
-The app can be published to:
-
-```text
-%LOCALAPPDATA%\LightPilot\App
+```powershell
+.\scripts\install-local.ps1
 ```
 
-Startup is registered under:
+This installs to `%LOCALAPPDATA%\LightPilot\App`, creates a Start Menu shortcut, starts the tray app, and registers startup with `--background`.
 
-```text
-HKCU\Software\Microsoft\Windows\CurrentVersion\Run
+Uninstall local app files:
+
+```powershell
+.\scripts\uninstall-local.ps1
 ```
 
-with:
+Smoke check:
 
-```text
-"%LOCALAPPDATA%\LightPilot\App\LightPilot.App.exe" --background
+```powershell
+.\scripts\smoke.ps1
 ```
 
 ## License
