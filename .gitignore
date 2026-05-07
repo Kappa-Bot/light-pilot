@@ -1,0 +1,30 @@
+# Build output
+bin/
+obj/
+artifacts/
+publish/
+TestResults/
+coverage/
+*.trx
+*.coverage
+*.coveragexml
+
+# IDE/user state
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local app/runtime state
+*.log
+settings.json
+diagnostics/
+
+# Packages/temp
+*.nupkg
+*.snupkg
+*.tmp
+*.bak

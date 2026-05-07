@@ -1,0 +1,142 @@
+using LightPilot.Core;
+
+namespace LightPilot.App.ViewModels;
+
+public sealed class SettingsViewModel : ObservableObject
+{
+    private bool _startWithWindows;
+    private int _comfortIntensity;
+    private string _wakeTime = "";
+    private string _sleepTime = "";
+    private int _minimumBrightnessPercent;
+    private int _maximumBrightnessPercent;
+    private bool _enableDdcCi;
+    private bool _enableContentBrightnessAnalysis;
+    private bool _gamingVideoProtection;
+    private int _transitionSpeedSeconds;
+
+    public SettingsViewModel(UserSettings settings, bool startWithWindows)
+    {
+        Load(settings, startWithWindows);
+        ResetCommand = new RelayCommand(Reset);
+    }
+
+    public RelayCommand ResetCommand { get; }
+
+    public bool StartWithWindows
+    {
+        get => _startWithWindows;
+        set => SetProperty(ref _startWithWindows, value);
+    }
+
+    public int ComfortIntensity
+    {
+        get => _comfortIntensity;
+        set => SetProperty(ref _comfortIntensity, value);
+    }
+
+    public string WakeTime
+    {
+        get => _wakeTime;
+        set => SetProperty(ref _wakeTime, value);
+    }
+
+    public string SleepTime
+    {
+        get => _sleepTime;
+        set => SetProperty(ref _sleepTime, value);
+    }
+
+    public int MinimumBrightnessPercent
+    {
+        get => _minimumBrightnessPercent;
+        set
+        {
+            if (SetProperty(ref _minimumBrightnessPercent, value) && _maximumBrightnessPercent < value)
+            {
+                MaximumBrightnessPercent = value;
+            }
+        }
+    }
+
+    public int MaximumBrightnessPercent
+    {
+        get => _maximumBrightnessPercent;
+        set
+        {
+            if (SetProperty(ref _maximumBrightnessPercent, value) && _minimumBrightnessPercent > value)
+            {
+                MinimumBrightnessPercent = value;
+            }
+        }
+    }
+
+    public bool EnableDdcCi
+    {
+        get => _enableDdcCi;
+        set => SetProperty(ref _enableDdcCi, value);
+    }
+
+    public bool EnableContentBrightnessAnalysis
+    {
+        get => _enableContentBrightnessAnalysis;
+        set => SetProperty(ref _enableContentBrightnessAnalysis, value);
+    }
+
+    public bool GamingVideoProtection
+    {
+        get => _gamingVideoProtection;
+        set => SetProperty(ref _gamingVideoProtection, value);
+    }
+
+    public int TransitionSpeedSeconds
+    {
+        get => _transitionSpeedSeconds;
+        set => SetProperty(ref _transitionSpeedSeconds, value);
+    }
+
+    public UserSettings ToSettings(UserSettings current)
+    {
+        var wakeTime = ParseTime(WakeTime, current.WakeTime);
+        var sleepTime = ParseTime(SleepTime, current.SleepTime);
+        var minimum = Math.Clamp(MinimumBrightnessPercent, 15, 100);
+        var maximum = Math.Clamp(MaximumBrightnessPercent, minimum, 100);
+
+        return current with
+        {
+            ComfortIntensity = Math.Clamp(ComfortIntensity, 0, 100),
+            WakeTime = wakeTime,
+            SleepTime = sleepTime,
+            MinimumBrightnessPercent = minimum,
+            MaximumBrightnessPercent = maximum,
+            EnableDdcCi = EnableDdcCi,
+            EnableContentBrightnessAnalysis = EnableContentBrightnessAnalysis,
+            GamingVideoProtection = GamingVideoProtection,
+            TransitionSpeed = TimeSpan.FromSeconds(Math.Clamp(TransitionSpeedSeconds, 5, 180))
+        };
+    }
+
+    private void Load(UserSettings settings, bool startWithWindows)
+    {
+        StartWithWindows = startWithWindows;
+        ComfortIntensity = settings.ComfortIntensity;
+        WakeTime = settings.WakeTime.ToString("HH:mm");
+        SleepTime = settings.SleepTime.ToString("HH:mm");
+        MinimumBrightnessPercent = settings.MinimumBrightnessPercent;
+        MaximumBrightnessPercent = settings.MaximumBrightnessPercent;
+        EnableDdcCi = settings.EnableDdcCi;
+        EnableContentBrightnessAnalysis = settings.EnableContentBrightnessAnalysis;
+        GamingVideoProtection = settings.GamingVideoProtection;
+        TransitionSpeedSeconds = (int)Math.Round(settings.TransitionSpeed.TotalSeconds);
+    }
+
+    private void Reset()
+    {
+        Load(UserSettings.Default, false);
+    }
+
+    private static TimeOnly ParseTime(string value, TimeOnly fallback)
+    {
+        return TimeOnly.TryParse(value, out var parsed) ? parsed : fallback;
+    }
+}

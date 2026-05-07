@@ -1,0 +1,86 @@
+# Light Pilot
+
+![Light Pilot logo](src/LightPilot.App/Assets/LightPilotLogo.png)
+
+**Light Pilot** is a local-first Windows screen comfort utility. It runs quietly in the tray, adapts brightness and warmth gently, protects games/videos from disruptive changes, and keeps all screen analysis on-device.
+
+Think CareUEyes/f.lux-style comfort, with a calmer adaptive engine and a cleaner professional UI.
+
+## Highlights
+
+- Tray-first Windows desktop app
+- Compact GUI with quick comfort presets: Calm, Balanced, Deep
+- Gentle adaptive brightness: max 3 percentage points per decision
+- Less aggressive default comfort intensity
+- DDC/CI monitor brightness when supported
+- WMI laptop brightness fallback
+- Software overlay fallback
+- Optional local-only content brightness analysis, off by default
+- Startup registration with background launch
+- Single-instance behavior: opening the app brings the existing tray instance forward
+- MIT licensed
+
+## Privacy
+
+Light Pilot is local-first.
+
+- No cloud usage
+- No telemetry
+- No screenshot storage
+- No clipboard usage
+- Optional content brightness analysis only computes in-memory luminance aggregates
+
+## Run From Source
+
+```powershell
+dotnet build LightPilot.sln
+dotnet run --project src/LightPilot.App/LightPilot.App.csproj
+```
+
+Background/tray mode:
+
+```powershell
+dotnet run --project src/LightPilot.App/LightPilot.App.csproj -- --background
+```
+
+Safe no-hardware mode:
+
+```powershell
+dotnet run --project src/LightPilot.App/LightPilot.App.csproj -- --no-hardware
+```
+
+## Test
+
+```powershell
+dotnet test LightPilot.sln
+```
+
+## Package
+
+```powershell
+dotnet publish src/LightPilot.App/LightPilot.App.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
+```
+
+## Local Install
+
+The app can be published to:
+
+```text
+%LOCALAPPDATA%\LightPilot\App
+```
+
+Startup is registered under:
+
+```text
+HKCU\Software\Microsoft\Windows\CurrentVersion\Run
+```
+
+with:
+
+```text
+"%LOCALAPPDATA%\LightPilot\App\LightPilot.App.exe" --background
+```
+
+## License
+
+MIT License. Copyright (c) 2026 edfpolo.
