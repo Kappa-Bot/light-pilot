@@ -14,14 +14,62 @@ $zipPath = Join-Path $tempRoot $asset.name
 $extractPath = Join-Path $tempRoot "extract"
 $installDir = Join-Path $env:LOCALAPPDATA "LightPilot\App"
 
+function Stop-LightPilot {
+    $processes = @(Get-Process LightPilot.App -ErrorAction SilentlyContinue)
+    if ($processes.Count -eq 0) {
+        return
+    }
+
+    $ids = $processes | ForEach-Object { $_.Id }
+    $processes | Stop-Process -Force
+    foreach ($id in $ids) {
+        try {
+            Wait-Process -Id $id -Timeout 10 -ErrorAction SilentlyContinue
+        }
+        catch {
+        }
+    }
+
+    for ($attempt = 1; $attempt -le 20; $attempt++) {
+        if (-not (Get-Process LightPilot.App -ErrorAction SilentlyContinue)) {
+            return
+        }
+
+        Start-Sleep -Milliseconds 250
+    }
+
+    throw "LightPilot.App.exe did not exit cleanly."
+}
+
+function Copy-WithRetry {
+    param(
+        [string]$Source,
+        [string]$Destination
+    )
+
+    for ($attempt = 1; $attempt -le 5; $attempt++) {
+        try {
+            Copy-Item -Path $Source -Destination $Destination -Recurse -Force
+            return
+        }
+        catch {
+            if ($attempt -eq 5) {
+                throw
+            }
+
+            Start-Sleep -Milliseconds (300 * $attempt)
+        }
+    }
+}
+
 New-Item -ItemType Directory -Path $tempRoot, $extractPath -Force | Out-Null
 try {
     Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zipPath -Headers @{ "User-Agent" = "LightPilot-Updater" }
     Expand-Archive -Path $zipPath -DestinationPath $extractPath -Force
 
-    Get-Process LightPilot.App -ErrorAction SilentlyContinue | Stop-Process -Force
+    Stop-LightPilot
     New-Item -ItemType Directory -Path $installDir -Force | Out-Null
-    Copy-Item -Path (Join-Path $extractPath "*") -Destination $installDir -Recurse -Force
+    Copy-WithRetry -Source (Join-Path $extractPath "*") -Destination $installDir
 
     $exe = Join-Path $installDir "LightPilot.App.exe"
     $runCommand = '"' + $exe + '" --background'
